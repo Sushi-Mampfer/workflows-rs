@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::types::WorkflowEventOptions::WorkflowEventOptions;
+use crate::WorkflowEventOptions;
 
 #[wasm_bindgen]
 extern "C" {

@@ -1,7 +1,7 @@
 use js_sys::Promise;
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
-use crate::types::WorkflowEventOptions::WorkflowEventOptions;
+use crate::WorkflowEventOptions;
 
 #[wasm_bindgen]
 extern "C" {

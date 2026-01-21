@@ -1,4 +1,4 @@
-use crate::types::Workflow::Workflow;
+use crate::Workflow;
 use worker::Env;
 
 pub trait EnvWorkflowExt {

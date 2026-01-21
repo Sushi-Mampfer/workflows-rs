@@ -2,10 +2,7 @@ use serde::Serialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
 use worker::{EnvBinding, wasm_bindgen_futures};
 
-use crate::types::{
-    WorkflowInstance::WorkflowInstance,
-    WorkflowInstanceCreateOptions::WorkflowInstanceCreateOptions,
-};
+use crate::{WorkflowInstance, WorkflowInstanceCreateOptions};
 
 #[wasm_bindgen]
 extern "C" {
