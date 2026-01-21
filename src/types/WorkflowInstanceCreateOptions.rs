@@ -1,16 +1,16 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 
-#[derive(Serialize)]
-pub struct WorkflowInstanceCreateOptions {
+#[derive(Serialize, Deserialize)]
+pub struct WorkflowInstanceCreateOptions<T> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub params: Option<JsValue>,
+    pub params: Option<T>,
 }
 
-impl WorkflowInstanceCreateOptions {
-    pub fn new(id: Option<String>, params: Option<JsValue>) -> Self {
+impl<T: Serialize> WorkflowInstanceCreateOptions<T> {
+    pub fn new(id: Option<String>, params: Option<T>) -> Self {
         Self { id, params }
     }
 
@@ -19,10 +19,10 @@ impl WorkflowInstanceCreateOptions {
     }
 }
 
-impl TryFrom<&WorkflowInstanceCreateOptions> for JsValue {
+impl<T: Serialize> TryFrom<&WorkflowInstanceCreateOptions<T>> for JsValue {
     type Error = serde_wasm_bindgen::Error;
 
-    fn try_from(options: &WorkflowInstanceCreateOptions) -> Result<Self, Self::Error> {
+    fn try_from(options: &WorkflowInstanceCreateOptions<T>) -> Result<Self, Self::Error> {
         options.serialize()
     }
 }

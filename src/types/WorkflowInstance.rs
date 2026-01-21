@@ -1,4 +1,5 @@
-use wasm_bindgen::prelude::wasm_bindgen;
+use js_sys::Promise;
+use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 use crate::types::WorkflowEventOptions::WorkflowEventOptions;
 
@@ -24,11 +25,14 @@ extern "C" {
     pub fn restart(this: &WorkflowInstance) -> js_sys::Promise;
 
     #[wasm_bindgen(method, js_name = "sendEvent")]
-    fn send_event_internal(this: &WorkflowInstance) -> js_sys::Promise;
+    fn send_event_internal(this: &WorkflowInstance, options: JsValue) -> js_sys::Promise;
 }
 
 impl WorkflowInstance {
-    pub fn send_event(&self, options: WorkflowEventOptions) {
-        todo!()
+    pub fn send_event(
+        &self,
+        options: WorkflowEventOptions,
+    ) -> Result<Promise, serde_wasm_bindgen::Error> {
+        Ok(self.send_event_internal(options.serialize()?))
     }
 }

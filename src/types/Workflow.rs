@@ -1,5 +1,6 @@
+use serde::Serialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
-use worker::wasm_bindgen_futures;
+use worker::{EnvBinding, wasm_bindgen_futures};
 
 use crate::types::{
     WorkflowInstance::WorkflowInstance,
@@ -26,9 +27,9 @@ extern "C" {
 }
 
 impl Workflow {
-    pub async fn create(
+    pub async fn create<T: Serialize>(
         &self,
-        options: Option<WorkflowInstanceCreateOptions>,
+        options: Option<WorkflowInstanceCreateOptions<T>>,
     ) -> Result<WorkflowInstance, JsValue> {
         let promise = match options {
             Some(options) => self.create_with_options_internal(options.serialize()?),
@@ -40,9 +41,9 @@ impl Workflow {
         }
     }
 
-    pub async fn crate_with_options(
+    pub async fn crate_with_options<T: Serialize>(
         &self,
-        batch: Vec<WorkflowInstanceCreateOptions>,
+        batch: Vec<WorkflowInstanceCreateOptions<T>>,
     ) -> Result<Vec<WorkflowInstance>, JsValue> {
         let promise = self.create_batch_internal(&js_sys::Array::from_iter(
             batch
@@ -67,4 +68,8 @@ impl Workflow {
             Err(e) => Err(e),
         }
     }
+}
+
+impl EnvBinding for Workflow {
+    const TYPE_NAME: &'static str = "Workflow";
 }
