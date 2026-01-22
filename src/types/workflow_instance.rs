@@ -9,7 +9,7 @@ extern "C" {
     #[derive(Clone, PartialEq, Eq)]
     pub type WorkflowInstance;
 
-    #[wasm_bindgen(method, getter)]
+    #[wasm_bindgen(structural, method, getter)]
     pub fn id(this: &WorkflowInstance) -> String;
 
     #[wasm_bindgen(method)]

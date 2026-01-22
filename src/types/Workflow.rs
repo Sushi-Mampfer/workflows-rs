@@ -1,6 +1,6 @@
 use serde::Serialize;
 use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
-use worker::{EnvBinding, wasm_bindgen_futures};
+use worker::{EnvBinding, console_error, wasm_bindgen_futures};
 
 use crate::{WorkflowInstance, WorkflowInstanceCreateOptions};
 
@@ -33,8 +33,17 @@ impl Workflow {
             None => self.create_argless_internal(),
         };
         match wasm_bindgen_futures::JsFuture::from(promise).await {
-            Ok(instance) => Ok(instance.dyn_into()?),
-            Err(e) => Err(e),
+            Ok(instance) => match instance.dyn_into() {
+                Ok(i) => Ok(i),
+                Err(e) => {
+                    console_error!("Failed to cast instance");
+                    Err(e)
+                }
+            },
+            Err(e) => {
+                console_error!("Failed at resolving future");
+                Err(e)
+            }
         }
     }
 
