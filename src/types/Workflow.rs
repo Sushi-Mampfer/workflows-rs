@@ -68,5 +68,5 @@ impl Workflow {
 }
 
 impl EnvBinding for Workflow {
-    const TYPE_NAME: &'static str = "Workflow";
+    const TYPE_NAME: &'static str = "WorkflowImpl";
 }
