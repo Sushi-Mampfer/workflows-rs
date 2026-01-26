@@ -52,11 +52,11 @@ impl Workflow {
                 .collect::<Result<Vec<JsValue>, serde_wasm_bindgen::Error>>()?,
         ));
         match wasm_bindgen_futures::JsFuture::from(promise).await {
-            Ok(instance) => instance
+            Ok(instance) => Ok(instance
                 .dyn_into::<js_sys::Array>()?
                 .iter()
-                .map(|i| i.dyn_into())
-                .collect::<Result<Vec<WorkflowInstance>, JsValue>>(),
+                .map(|i| i.unchecked_into::<WorkflowInstance>())
+                .collect::<Vec<WorkflowInstance>>()),
             Err(e) => Err(e),
         }
     }
@@ -64,7 +64,7 @@ impl Workflow {
     pub async fn get(&self, id: String) -> Result<WorkflowInstance, JsValue> {
         let promise = self.get_internal(id);
         match wasm_bindgen_futures::JsFuture::from(promise).await {
-            Ok(instance) => Ok(instance.dyn_into()?),
+            Ok(instance) => Ok(instance.unchecked_into::<WorkflowInstance>()),
             Err(e) => Err(e),
         }
     }

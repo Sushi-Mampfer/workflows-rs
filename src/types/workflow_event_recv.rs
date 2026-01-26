@@ -2,13 +2,13 @@ use serde::Serialize;
 use wasm_bindgen::JsValue;
 
 #[derive(Serialize)]
-pub struct WorkflowEventOptions {
+pub struct WorkflowEventRecv {
     #[serde(rename = "type")]
     pub type_name: String,
     pub timeout: String,
 }
 
-impl WorkflowEventOptions {
+impl WorkflowEventRecv {
     pub fn new(type_name: impl Into<String>, timeout: impl Into<String>) -> Self {
         Self {
             type_name: type_name.into(),
@@ -21,10 +21,10 @@ impl WorkflowEventOptions {
     }
 }
 
-impl TryFrom<&WorkflowEventOptions> for JsValue {
+impl TryFrom<&WorkflowEventRecv> for JsValue {
     type Error = serde_wasm_bindgen::Error;
 
-    fn try_from(event: &WorkflowEventOptions) -> Result<Self, Self::Error> {
+    fn try_from(event: &WorkflowEventRecv) -> Result<Self, Self::Error> {
         event.serialize()
     }
 }

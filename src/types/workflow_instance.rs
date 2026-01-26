@@ -1,7 +1,8 @@
-use js_sys::Promise;
-use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
+use serde::{Serialize, de::DeserializeOwned};
+use wasm_bindgen::{JsCast, JsValue, prelude::wasm_bindgen};
+use wasm_bindgen_futures::JsFuture;
 
-use crate::WorkflowEventOptions;
+use crate::WorkflowEventSend;
 
 #[wasm_bindgen]
 extern "C" {
@@ -10,7 +11,7 @@ extern "C" {
     pub type WorkflowInstance;
 
     #[wasm_bindgen(method, getter)]
-    fn id(this: &WorkflowInstance) -> String;
+    pub fn id(this: &WorkflowInstance) -> String;
 
     #[wasm_bindgen(method)]
     fn pause(this: &WorkflowInstance) -> js_sys::Promise;
@@ -32,10 +33,28 @@ extern "C" {
 }
 
 impl WorkflowInstance {
-    pub fn send_event(
+    pub async fn send_event<T: Serialize + DeserializeOwned>(
         &self,
-        options: WorkflowEventOptions,
-    ) -> Result<Promise, serde_wasm_bindgen::Error> {
-        Ok(self.send_event_internal(options.serialize()?))
+        options: WorkflowEventSend<T>,
+    ) -> Result<(), String> {
+        let promise = self.send_event_internal(
+            options
+                .serialize()
+                .map_err(|_| "Failed to serialize options".to_string())?,
+        );
+        match JsFuture::from(promise).await {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                let error_msg = if let Some(s) = e.as_string() {
+                    s
+                } else if e.is_instance_of::<js_sys::Error>() {
+                    let err: js_sys::Error = e.unchecked_into();
+                    err.message().into()
+                } else {
+                    format!("{:?}", e)
+                };
+                Err(error_msg)
+            }
+        }
     }
 }
