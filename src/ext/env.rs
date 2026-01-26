@@ -1,5 +1,5 @@
 use crate::Workflow;
-use worker::{Env, console_error};
+use worker::Env;
 
 pub trait EnvWorkflowExt {
     fn workflow(&self, binding: &str) -> worker::Result<Workflow>;

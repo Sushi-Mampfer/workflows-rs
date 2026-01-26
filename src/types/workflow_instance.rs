@@ -9,20 +9,23 @@ extern "C" {
     #[derive(Clone, PartialEq, Eq)]
     pub type WorkflowInstance;
 
-    #[wasm_bindgen(structural, method, getter)]
-    pub fn id(this: &WorkflowInstance) -> String;
+    #[wasm_bindgen(method, getter)]
+    fn id(this: &WorkflowInstance) -> String;
 
     #[wasm_bindgen(method)]
-    pub fn pause(this: &WorkflowInstance) -> js_sys::Promise;
+    fn pause(this: &WorkflowInstance) -> js_sys::Promise;
 
     #[wasm_bindgen(method)]
-    pub fn resume(this: &WorkflowInstance) -> js_sys::Promise;
+    fn resume(this: &WorkflowInstance) -> js_sys::Promise;
 
     #[wasm_bindgen(method)]
-    pub fn terminate(this: &WorkflowInstance) -> js_sys::Promise;
+    fn terminate(this: &WorkflowInstance) -> js_sys::Promise;
 
     #[wasm_bindgen(method)]
-    pub fn restart(this: &WorkflowInstance) -> js_sys::Promise;
+    fn restart(this: &WorkflowInstance) -> js_sys::Promise;
+
+    #[wasm_bindgen(method)]
+    fn status(this: &WorkflowInstance) -> js_sys::Promise;
 
     #[wasm_bindgen(method, js_name = "sendEvent")]
     fn send_event_internal(this: &WorkflowInstance, options: JsValue) -> js_sys::Promise;

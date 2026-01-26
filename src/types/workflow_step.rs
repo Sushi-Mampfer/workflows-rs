@@ -12,7 +12,7 @@ extern "C" {
     pub fn do_argless(
         this: &WorkflowStep,
         name: String,
-        callback: &dyn Fn() -> JsValue,
+        callback: &js_sys::Function,
     ) -> js_sys::Promise;
 
     #[wasm_bindgen(method, js_name=do)]
@@ -20,7 +20,7 @@ extern "C" {
         this: &WorkflowStep,
         name: String,
         config: String,
-        callback: &dyn Fn() -> JsValue,
+        callback: &js_sys::Function,
     ) -> js_sys::Promise;
 
     #[wasm_bindgen(method)]

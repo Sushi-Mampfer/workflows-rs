@@ -33,13 +33,7 @@ impl Workflow {
             None => self.create_argless_internal(),
         };
         match wasm_bindgen_futures::JsFuture::from(promise).await {
-            Ok(instance) => match instance.dyn_into() {
-                Ok(i) => Ok(i),
-                Err(e) => {
-                    console_error!("Failed to cast instance");
-                    Err(e)
-                }
-            },
+            Ok(instance) => Ok(instance.unchecked_into::<WorkflowInstance>()),
             Err(e) => {
                 console_error!("Failed at resolving future");
                 Err(e)
