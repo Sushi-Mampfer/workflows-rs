@@ -1,3 +1,4 @@
+mod instance_status;
 mod workflow;
 mod workflow_event;
 mod workflow_event_recv;
@@ -7,6 +8,7 @@ mod workflow_instance_create_options;
 mod workflow_step;
 mod workflow_step_config;
 
+pub use instance_status::*;
 pub use workflow::Workflow;
 pub use workflow_event::WorkflowEvent;
 pub use workflow_event_recv::WorkflowEventRecv;

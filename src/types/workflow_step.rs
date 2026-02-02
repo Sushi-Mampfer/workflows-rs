@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use serde::{Serialize, de::DeserializeOwned};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::{JsFuture, future_to_promise};
 
@@ -12,14 +12,14 @@ extern "C" {
     #[derive(Clone, PartialEq, Eq)]
     pub type WorkflowStep;
 
-    #[wasm_bindgen(method, js_name=do)]
+    #[wasm_bindgen(method, js_name = "do")]
     fn do_argless(
         this: &WorkflowStep,
         name: String,
         callback: &Closure<dyn Fn() -> js_sys::Promise>,
     ) -> js_sys::Promise;
 
-    #[wasm_bindgen(method, js_name=do)]
+    #[wasm_bindgen(method, js_name = "do")]
     fn do_with_option(
         this: &WorkflowStep,
         name: String,
@@ -27,13 +27,13 @@ extern "C" {
         callback: &Closure<dyn Fn() -> js_sys::Promise>,
     ) -> js_sys::Promise;
 
-    #[wasm_bindgen(method)]
+    #[wasm_bindgen(method, js_name = "sleep")]
     fn sleep_internal(this: &WorkflowStep, name: String, duration: String) -> js_sys::Promise;
 
-    #[wasm_bindgen(method, js_name = sleepUntil)]
+    #[wasm_bindgen(method, js_name = "sleepUntil")]
     fn sleep_until_internal(this: &WorkflowStep, name: String, timestamp: i32) -> js_sys::Promise;
 
-    #[wasm_bindgen(method, js_name = waitForEvent)]
+    #[wasm_bindgen(method, js_name = "waitForEvent")]
     fn wait_for_event_internal(
         this: &WorkflowStep,
         name: String,
@@ -106,11 +106,11 @@ impl WorkflowStep {
         let _ = JsFuture::from(promise).await;
     }
 
-    pub async fn wait_for_event(
+    pub async fn wait_for_event<T: DeserializeOwned>(
         &self,
         name: String,
         options: &WorkflowEventRecv,
-    ) -> Result<(), String> {
+    ) -> Result<T, String> {
         let promise = self.wait_for_event_internal(
             name,
             options
@@ -118,7 +118,13 @@ impl WorkflowStep {
                 .map_err(|_| "Failed to serialize options.".to_string())?,
         );
         match JsFuture::from(promise).await {
-            Ok(_) => Ok(()),
+            Ok(r) => {
+                let event: Event<T> = match serde_wasm_bindgen::from_value(r) {
+                    Ok(e) => e,
+                    Err(_) => return Err("Failed to deserialize result.".to_string()),
+                };
+                Ok(event.payload)
+            }
             Err(e) => {
                 let error_msg = if let Some(s) = e.as_string() {
                     s
@@ -132,4 +138,9 @@ impl WorkflowStep {
             }
         }
     }
+}
+
+#[derive(Deserialize)]
+struct Event<T> {
+    pub payload: T,
 }
