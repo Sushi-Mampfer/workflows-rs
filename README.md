@@ -1,4 +1,4 @@
-# Workflows-rs
+# workflows-rs
 A rust wrapper for [cloudflare workflows](https://www.cloudflare.com/developer-platform/products/workflows/)
 
 > [!WARNING]  
