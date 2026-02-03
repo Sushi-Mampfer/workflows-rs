@@ -65,3 +65,40 @@ async fn fetch(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     }
 }
 ```
+### A note on step.do
+`do` is a reserved keywork in rust and therfore I have renamed it to `exec`. \
+In js you can pass a closure that can be async but doesn't have to be. In rust this is (to my knowledge) not possible. \
+Because most of workers-rs relies on async exec takes a Fn() that returns a future, this can be done with `|| async {}` \
+For more complicated functions that need `env` you have to clone it in the outer, sync closure:
+```rust
+let env = self.env.clone();
+let bucket_content = step
+    .exec("test-step", None, move || {
+        let env = env.clone();
+        async move {
+            Ok(env
+                .bucket("TEST")
+                .unwrap()
+                .get("test")
+                .execute()
+                .await
+                .unwrap()
+                .unwrap()
+                .body()
+                .unwrap()
+                .text()
+                .await
+                .unwrap()
+            )
+        }
+    })
+        .await
+        .unwrap();
+```
+
+## TODO
+- [] Macros for more safety
+- [] Somehow removing the need for `workflows-build`
+- [] More constructors for config structs 
+
+Except for the last one I currently lack the knowledge to do it, and with there being a pr that would add the same functionality to the official workers-rs repo I don't see much of a reason to learn it.
