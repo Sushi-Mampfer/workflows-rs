@@ -95,10 +95,12 @@ let bucket_content = step
         .await
         .unwrap();
 ```
+### A note on js errors
+If your future returns an `Err` it's treades as a js error with the same content.
 
 ## TODO
-- [] Macros for more safety
-- [] Somehow removing the need for `workflows-build`
-- [] More constructors for config structs 
+- [ ] Macros for more safety
+- [ ] Somehow removing the need for `workflows-build`
+- [ ] More constructors for config structs 
 
 Except for the last one I currently lack the knowledge to do it, and with there being a pr that would add the same functionality to the official workers-rs repo I don't see much of a reason to learn it.
